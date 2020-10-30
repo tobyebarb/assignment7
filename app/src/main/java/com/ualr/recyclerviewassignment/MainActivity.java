@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,8 @@ import com.ualr.recyclerviewassignment.databinding.ActivityListMultiSelectionBin
 import com.ualr.recyclerviewassignment.model.Inbox;
 
 import java.util.List;
+
+import javax.sql.DataSource;
 
 // TODO 05. Create a new Adapter class and the corresponding ViewHolder class in a different file. The adapter will be used to populate
 //  the recyclerView and manage the interaction with the items in the list
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
         mBinding = ActivityListMultiSelectionBinding.inflate(getLayoutInflater());
         setContentView(mBinding.getRoot());
         initComponent();
+
     }
 
     private void initComponent() {
@@ -44,17 +48,27 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
         List<Inbox> items = DataGenerator.getInboxData(this);
         items.addAll(DataGenerator.getInboxData(this));
         items.addAll(DataGenerator.getInboxData(this));
+
+        final Context here = (this);
+
         // TODO 03. Do the setup of a new RecyclerView instance to display the item list properly
         //RecyclerView contactListView = mBinding.recyclerView;
         // TODO 04. Define the layout of each item in the list
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mBinding.recyclerView.setLayoutManager(layoutManager);
         mAdapter = new AdapterListBasic(this, items);
-        mAdapter.setOnItemClickListener(this);
+
         // TODO 09. Create a new instance of the created Adapter class and bind it to the RecyclerView instance created in step 03
         //AdapterListBasic adapter = new AdapterListBasic(items);
         //contactListView.setAdapter(adapter);
         mBinding.recyclerView.setAdapter(mAdapter);
+
+        mAdapter.setOnItemClickListener(new AdapterListBasic.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, Inbox obj, int position) {
+                if(obj.isSelected()) mAdapter.removeItem(position);
+            }
+        });
 
         mFAB = findViewById(R.id.fab);
         mFAB.setOnClickListener(new View.OnClickListener() {
@@ -62,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
             public void onClick(View view) {
                 // TODO 10. Invoke the method created to a new item to the top of the list so it's
                 //  triggered when the user taps the Floating Action Button
+                mAdapter.addItem(0, DataGenerator.getRandomInboxItem(here));
             }
         });
     }
 
     @Override
     public void onItemClick(View view, Inbox obj, int position) {
-        Log.d(TAG, String.format("The user %s has tapped on the item %d ", obj.getFrom(), position));
+        //if(obj.isSelected()) mAdapter.removeItem(position);
     }
 }

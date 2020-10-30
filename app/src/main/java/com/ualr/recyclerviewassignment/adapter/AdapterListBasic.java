@@ -1,15 +1,20 @@
 package com.ualr.recyclerviewassignment.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ualr.recyclerviewassignment.MainActivity;
 import com.ualr.recyclerviewassignment.R;
 import com.ualr.recyclerviewassignment.model.Inbox;
 
@@ -19,12 +24,14 @@ public class AdapterListBasic extends RecyclerView.Adapter {
 
     private List<Inbox> mItems;
     private Context mContext;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     public interface OnItemClickListener {
         void onItemClick(View view, Inbox obj, int position);
     }
 
     public OnItemClickListener mListener;
+    public int row_index = -1;
 
     public AdapterListBasic(Context context, List<Inbox> items) {
         this.mItems = items;
@@ -33,6 +40,21 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     public void setOnItemClickListener(final OnItemClickListener itemClickListener) {
         this.mListener = itemClickListener;
     }
+
+    public void removeItem(int position) {
+        if (position >= mItems.size()) {
+            return;
+        }
+        mItems.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }
+
+    public void addItem(int position, Inbox item) {
+        mItems.add(position, item);
+        notifyItemInserted(position);
+    }
+
 
     @NonNull
     @Override
@@ -44,7 +66,8 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int index) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int index) { // final can be removed?
+
         InboxViewHolder inboxViewHolder = (InboxViewHolder) holder;
         Inbox i = mItems.get(index);
 
@@ -53,6 +76,26 @@ public class AdapterListBasic extends RecyclerView.Adapter {
         inboxViewHolder.message.setText(i.getMessage());
         inboxViewHolder.date.setText(i.getDate());
         inboxViewHolder.letter.setText(i.getLetter());
+
+        inboxViewHolder.layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                row_index = index;
+                notifyDataSetChanged();
+            }
+        });
+        if(row_index == index) {
+            inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#C0C0C0"));
+            inboxViewHolder.letter.setText("X");
+            i.setSelected(true);
+        }
+        else{
+            inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#ffffff"));
+            inboxViewHolder.letter.setText(i.getLetter());
+            i.setSelected(false);
+        }
+
+        if(row_index == index && i.isSelected()) removeItem(index);
     }
 
     @Override
@@ -68,6 +111,7 @@ public class AdapterListBasic extends RecyclerView.Adapter {
         public TextView date;
         public TextView letter;
         public View lyt_parent;
+        public ConstraintLayout layout;
 
         public InboxViewHolder(final View itemView) {
             super(itemView);
@@ -77,6 +121,10 @@ public class AdapterListBasic extends RecyclerView.Adapter {
             date = itemView.findViewById(R.id.date);
             letter = itemView.findViewById(R.id.letter);
             lyt_parent = itemView.findViewById(R.id.lyt_parent);
+
+
+            layout = (ConstraintLayout)itemView.findViewById(R.id.background);
+
             lyt_parent.setOnClickListener(new View.OnClickListener() {
                 //@Override
                 public void onClick(View v) {
