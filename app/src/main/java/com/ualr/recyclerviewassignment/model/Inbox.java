@@ -54,4 +54,6 @@ public class Inbox {
     public void toggleSelection() {
         this.selected = !this.selected;
     }
+
+    public String getLetter() {return from.substring(0,1);}
 }
