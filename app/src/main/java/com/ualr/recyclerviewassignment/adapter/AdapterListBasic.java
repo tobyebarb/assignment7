@@ -85,17 +85,18 @@ public class AdapterListBasic extends RecyclerView.Adapter {
             }
         });
         if(row_index == index) {
-            inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#C0C0C0"));
-            inboxViewHolder.letter.setText("X");
-            i.setSelected(true);
+            if(i.isSelected()) removeItem(index);
+            else{
+                inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#C0C0C0"));
+                inboxViewHolder.letter.setText("X");
+                i.setSelected(true);
+            }
         }
         else{
             inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#ffffff"));
             inboxViewHolder.letter.setText(i.getLetter());
             i.setSelected(false);
         }
-
-        if(row_index == index && i.isSelected()) removeItem(index);
     }
 
     @Override

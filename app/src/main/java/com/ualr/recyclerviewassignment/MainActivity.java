@@ -83,6 +83,6 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
 
     @Override
     public void onItemClick(View view, Inbox obj, int position) {
-        //if(obj.isSelected()) mAdapter.removeItem(position);
+
     }
 }
