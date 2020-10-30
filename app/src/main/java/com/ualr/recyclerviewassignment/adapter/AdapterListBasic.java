@@ -19,6 +19,7 @@ import com.ualr.recyclerviewassignment.R;
 import com.ualr.recyclerviewassignment.model.Inbox;
 
 import java.util.List;
+import java.util.logging.Handler;
 
 public class AdapterListBasic extends RecyclerView.Adapter {
 
@@ -69,7 +70,7 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int index) { // final can be removed?
 
         InboxViewHolder inboxViewHolder = (InboxViewHolder) holder;
-        Inbox i = mItems.get(index);
+        final Inbox i = mItems.get(index);
 
         inboxViewHolder.from.setText(i.getFrom());
         inboxViewHolder.email.setText(i.getEmail());
@@ -81,21 +82,22 @@ public class AdapterListBasic extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 row_index = index;
+                if(i.isSelected()) {
+                    removeItem(index);
+                    row_index = -1;
+                }
                 notifyDataSetChanged();
             }
         });
         if(row_index == index) {
-            if(i.isSelected()) removeItem(index);
-            else{
                 inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#C0C0C0"));
                 inboxViewHolder.letter.setText("X");
                 i.setSelected(true);
             }
-        }
         else{
-            inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#ffffff"));
-            inboxViewHolder.letter.setText(i.getLetter());
-            i.setSelected(false);
+                inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#ffffff"));
+                inboxViewHolder.letter.setText(i.getLetter());
+                i.setSelected(false);
         }
     }
 

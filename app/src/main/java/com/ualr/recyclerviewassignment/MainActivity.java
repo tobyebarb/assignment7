@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
                 // TODO 10. Invoke the method created to a new item to the top of the list so it's
                 //  triggered when the user taps the Floating Action Button
                 mAdapter.addItem(0, DataGenerator.getRandomInboxItem(here));
+                mBinding.recyclerView.scrollToPosition(0);
             }
         });
     }
