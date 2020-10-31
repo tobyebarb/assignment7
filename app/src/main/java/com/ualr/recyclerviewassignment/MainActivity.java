@@ -26,13 +26,14 @@ import javax.sql.DataSource;
 //  Implement a new method to delete the corresponding item in the list
 // TODO 08. Create a new method to add a new item on the top of the list. Use the DataGenerator class to create the new item to be added.
 
-public class MainActivity extends AppCompatActivity implements AdapterListBasic.OnItemClickListener{
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private FloatingActionButton mFAB;
     private ActivityListMultiSelectionBinding mBinding;
     private AdapterListBasic mAdapter;
+    private List<Inbox> mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
     }
 
     private void initComponent() {
+
+        mDataSource = DataGenerator.getInboxData(this);
         // TODO 01. Generate the item list to be displayed using the DataGenerator class
         List<Inbox> items = DataGenerator.getInboxData(this);
         items.addAll(DataGenerator.getInboxData(this));
@@ -65,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
 
         mAdapter.setOnItemClickListener(new AdapterListBasic.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, Inbox obj, int position) {
-                if(obj.isSelected()) mAdapter.removeItem(position);
+            public void onItemClick(View v, Inbox obj, int position) {
+
             }
         });
 
@@ -80,10 +83,5 @@ public class MainActivity extends AppCompatActivity implements AdapterListBasic.
                 mBinding.recyclerView.scrollToPosition(0);
             }
         });
-    }
-
-    @Override
-    public void onItemClick(View view, Inbox obj, int position) {
-
     }
 }

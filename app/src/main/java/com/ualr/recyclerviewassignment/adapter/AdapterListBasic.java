@@ -28,11 +28,10 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     public interface OnItemClickListener {
-        void onItemClick(View view, Inbox obj, int position);
+        void onItemClick(View v, Inbox obj, int position);
     }
 
     public OnItemClickListener mListener;
-    public int row_index = -1;
 
     public AdapterListBasic(Context context, List<Inbox> items) {
         this.mItems = items;
@@ -67,10 +66,10 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int index) { // final can be removed?
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int index) { // final can be removed?
 
         InboxViewHolder inboxViewHolder = (InboxViewHolder) holder;
-        final Inbox i = mItems.get(index);
+        Inbox i = mItems.get(index);
 
         inboxViewHolder.from.setText(i.getFrom());
         inboxViewHolder.email.setText(i.getEmail());
@@ -78,32 +77,28 @@ public class AdapterListBasic extends RecyclerView.Adapter {
         inboxViewHolder.date.setText(i.getDate());
         inboxViewHolder.letter.setText(i.getLetter());
 
-        inboxViewHolder.layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                row_index = index;
-                if(i.isSelected()) {
-                    removeItem(index);
-                    row_index = -1;
-                }
-                notifyDataSetChanged();
-            }
-        });
-        if(row_index == index) {
-                inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#C0C0C0"));
-                inboxViewHolder.letter.setText("X");
-                i.setSelected(true);
-            }
-        else{
-                inboxViewHolder.layout.setBackgroundColor(Color.parseColor("#ffffff"));
-                inboxViewHolder.letter.setText(i.getLetter());
-                i.setSelected(false);
+        if(i.isSelected()) {
+            inboxViewHolder.background.setBackgroundColor(mContext.getResources().getColor(R.color.grey_300));
+            inboxViewHolder.letter.setText("");
+            inboxViewHolder.xImage.setVisibility(View.VISIBLE);
+        }
+        else {
+            inboxViewHolder.background.setBackgroundColor(mContext.getResources().getColor(android.R.color.white));
+            inboxViewHolder.letter.setText(i.getLetter());
+            inboxViewHolder.xImage.setVisibility(View.INVISIBLE);
         }
     }
 
     @Override
     public int getItemCount() {
         return this.mItems.size();
+    }
+
+    public int checkEntries(){
+        for (int i=0; i< getItemCount();i++) {
+            if(mItems.get(i).isSelected()) return i;
+        }
+        return -1;
     }
 
     public class InboxViewHolder extends RecyclerView.ViewHolder {
@@ -114,7 +109,9 @@ public class AdapterListBasic extends RecyclerView.Adapter {
         public TextView date;
         public TextView letter;
         public View lyt_parent;
-        public ConstraintLayout layout;
+        public View background;
+        public ImageView thumbnail;
+        public ImageView xImage;
 
         public InboxViewHolder(final View itemView) {
             super(itemView);
@@ -124,16 +121,32 @@ public class AdapterListBasic extends RecyclerView.Adapter {
             date = itemView.findViewById(R.id.date);
             letter = itemView.findViewById(R.id.letter);
             lyt_parent = itemView.findViewById(R.id.lyt_parent);
+            background = itemView.findViewById(R.id.background);
+            thumbnail = itemView.findViewById(R.id.image);
+            xImage = itemView.findViewById(R.id.x_image);
 
-
-            layout = (ConstraintLayout)itemView.findViewById(R.id.background);
 
             lyt_parent.setOnClickListener(new View.OnClickListener() {
                 //@Override
                 public void onClick(View v) {
                     mListener.onItemClick(v, mItems.get(getAbsoluteAdapterPosition()), getAbsoluteAdapterPosition());
+                    int old_position=checkEntries();
+                    if (old_position==-1) mItems.get(getAbsoluteAdapterPosition()).toggleSelection();
+                    else {
+                        mItems.get(old_position).toggleSelection();
+                        mItems.get(getAbsoluteAdapterPosition()).toggleSelection();
+                    }
+                    notifyDataSetChanged();
                 }
             });
+
+            thumbnail.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mItems.get(getAbsoluteAdapterPosition()).isSelected())removeItem(getAbsoluteAdapterPosition());
+                }
+            });
+
         }
     }
 }
