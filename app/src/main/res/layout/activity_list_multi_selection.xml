@@ -5,15 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- TODO 02. Add RecyclerView element here -->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical"
-        android:scrollingCache="true"
-        />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    <FrameLayout
+        android:id="@+id/fragment_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

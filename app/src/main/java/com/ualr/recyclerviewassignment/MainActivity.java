@@ -1,18 +1,24 @@
 package com.ualr.recyclerviewassignment;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.ualr.recyclerviewassignment.Utils.DataGenerator;
 import com.ualr.recyclerviewassignment.adapter.AdapterListBasic;
 import com.ualr.recyclerviewassignment.databinding.ActivityListMultiSelectionBinding;
+import com.ualr.recyclerviewassignment.databinding.InboxFragmentBinding;
 import com.ualr.recyclerviewassignment.model.Inbox;
 
 import java.util.List;
@@ -29,20 +35,50 @@ import javax.sql.DataSource;
 public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String FRAGMENT_TAG = "InboxListFragment";
 
     private FloatingActionButton mFAB;
-    private ActivityListMultiSelectionBinding mBinding;
+    private InboxFragmentBinding mBinding;
     private AdapterListBasic mAdapter;
     private List<Inbox> mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityListMultiSelectionBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
-        initComponent();
+        //mBinding = InboxFragmentBinding.inflate(getLayoutInflater());
+        //setContentView(mBinding.getRoot());
+        setContentView(R.layout.activity_list_multi_selection);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        //initComponent();
+        InboxListFragment fragment = null;
+        if (fragment == null) return;
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_placeholder, new InboxListFragment(), FRAGMENT_TAG);
+        ft.commit();
+        getSupportFragmentManager().executePendingTransactions();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.delete_action:
+                return true;
+            case R.id.forward_action:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     private void initComponent() {
 
