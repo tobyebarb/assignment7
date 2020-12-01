@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RecyclerViewAssignment</string>
+    <string name="app_name">Home Devices</string>
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
         \n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam efficitur ipsum in placerat molestie.  Fusce quis mauris a enim sollicitudin
@@ -8,4 +8,6 @@
     <string name="settings_action">Settings</string>
     <string name="forward_action">Forward</string>
     <string name="snackbar_msg">Email deleted.</string>
+    <string name="forward_title">Forward message</string>
+    <string name="send_button_text">Send</string>
 </resources>

@@ -26,6 +26,7 @@ public class AdapterListBasic extends RecyclerView.Adapter {
     private List<Inbox> mItems;
     private Context mContext;
     private static final String TAG = MainActivity.class.getSimpleName();
+    public int position;
 
     public interface OnItemClickListener {
         void onItemClick(View v, Inbox obj, int position);
@@ -48,6 +49,24 @@ public class AdapterListBasic extends RecyclerView.Adapter {
         mItems.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, getItemCount());
+    }
+
+    public boolean itemSelected(int position) {
+        return mItems.get(position).isSelected();
+    }
+
+    public void updateItems(List<Inbox> items) {
+        this.mItems = items;
+        notifyItemInserted(0);
+    }
+
+    public void softUpdateItems(List<Inbox> items) {
+        this.mItems = items;
+        notifyDataSetChanged();
+    }
+
+    public int getIndex() {
+        return position;
     }
 
     public void addItem(int position, Inbox item) {
@@ -129,6 +148,7 @@ public class AdapterListBasic extends RecyclerView.Adapter {
             lyt_parent.setOnClickListener(new View.OnClickListener() {
                 //@Override
                 public void onClick(View v) {
+                    position = getAbsoluteAdapterPosition();
                     mListener.onItemClick(v, mItems.get(getAbsoluteAdapterPosition()), getAbsoluteAdapterPosition());
                     int old_position=checkEntries();
                     if (old_position==-1) mItems.get(getAbsoluteAdapterPosition()).toggleSelection();
@@ -137,13 +157,6 @@ public class AdapterListBasic extends RecyclerView.Adapter {
                         mItems.get(getAbsoluteAdapterPosition()).toggleSelection();
                     }
                     notifyDataSetChanged();
-                }
-            });
-
-            thumbnail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mItems.get(getAbsoluteAdapterPosition()).isSelected())removeItem(getAbsoluteAdapterPosition());
                 }
             });
 

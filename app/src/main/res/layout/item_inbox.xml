@@ -29,7 +29,7 @@
             android:id="@+id/x_image"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_delete_24px"
+            android:src="@drawable/ic_baseline_check_24"
             app:layout_constraintBottom_toBottomOf="@+id/image"
             app:layout_constraintEnd_toEndOf="@+id/image"
             app:layout_constraintStart_toStartOf="@+id/image"

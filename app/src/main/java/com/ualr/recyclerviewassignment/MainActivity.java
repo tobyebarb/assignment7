@@ -2,7 +2,10 @@ package com.ualr.recyclerviewassignment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,18 +15,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.ualr.recyclerviewassignment.Utils.DataGenerator;
 import com.ualr.recyclerviewassignment.adapter.AdapterListBasic;
 import com.ualr.recyclerviewassignment.databinding.ActivityListMultiSelectionBinding;
 import com.ualr.recyclerviewassignment.databinding.InboxFragmentBinding;
 import com.ualr.recyclerviewassignment.model.Inbox;
+import com.ualr.recyclerviewassignment.model.InboxViewModel;
 
 import java.util.List;
 
 import javax.sql.DataSource;
+
+import static com.ualr.recyclerviewassignment.InboxListFragment.ctx;
+//import static com.ualr.recyclerviewassignment.InboxListFragment.mContext;
 
 // TODO 05. Create a new Adapter class and the corresponding ViewHolder class in a different file. The adapter will be used to populate
 //  the recyclerView and manage the interaction with the items in the list
@@ -36,11 +46,19 @@ public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String FRAGMENT_TAG = "InboxListFragment";
+    private static final String FORWARD_FRAGMENT_TAG = "ForwardDialogFragment";
 
     private FloatingActionButton mFAB;
     private InboxFragmentBinding mBinding;
     private AdapterListBasic mAdapter;
     private List<Inbox> mDataSource;
+    public static Context here;
+    private RecyclerView mRecyclerView;
+    private Button mDelete;
+    private InboxViewModel viewModel;
+    private CoordinatorLayout parentView;
+    private String msg;
+    private int duration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +66,27 @@ public class MainActivity extends AppCompatActivity{
         //mBinding = InboxFragmentBinding.inflate(getLayoutInflater());
         //setContentView(mBinding.getRoot());
         setContentView(R.layout.activity_list_multi_selection);
+        viewModel = new ViewModelProvider(this).get(InboxViewModel.class);
+        parentView = findViewById(R.id.rootView);
+        msg = "Email deleted";
+        duration = Snackbar.LENGTH_LONG;
+
+        final Context here = (this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         //initComponent();
-        InboxListFragment fragment = null;
-        if (fragment == null) return;
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment_placeholder, new InboxListFragment(), FRAGMENT_TAG);
         ft.commit();
         getSupportFragmentManager().executePendingTransactions();
+    }
+
+    public void showDialog() {
+        ForwardDialogFragment dialog = new ForwardDialogFragment();
+        dialog.show(getSupportFragmentManager(), FORWARD_FRAGMENT_TAG);
     }
 
     @Override
@@ -71,52 +99,31 @@ public class MainActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.delete_action:
+                InboxListFragment listFragment = (InboxListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+                listFragment.deleteItem(parentView,msg,duration);
                 return true;
             case R.id.forward_action:
+                InboxListFragment listFragment1 = (InboxListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+                if (listFragment1.itemSelected())showDialog();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-
-    private void initComponent() {
-
-        mDataSource = DataGenerator.getInboxData(this);
-        // TODO 01. Generate the item list to be displayed using the DataGenerator class
-        List<Inbox> items = DataGenerator.getInboxData(this);
-        items.addAll(DataGenerator.getInboxData(this));
-        items.addAll(DataGenerator.getInboxData(this));
-
-        final Context here = (this);
-
-        // TODO 03. Do the setup of a new RecyclerView instance to display the item list properly
-        //RecyclerView contactListView = mBinding.recyclerView;
-        // TODO 04. Define the layout of each item in the list
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        mBinding.recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new AdapterListBasic(this, items);
-
-        // TODO 09. Create a new instance of the created Adapter class and bind it to the RecyclerView instance created in step 03
-        //AdapterListBasic adapter = new AdapterListBasic(items);
-        //contactListView.setAdapter(adapter);
-        mBinding.recyclerView.setAdapter(mAdapter);
-
-        mAdapter.setOnItemClickListener(new AdapterListBasic.OnItemClickListener() {
-            @Override
-            public void onItemClick(View v, Inbox obj, int position) {
-
-            }
-        });
-
+    public void onFAB(View view) {
+        mRecyclerView = findViewById(R.id.recyclerView);
         mFAB = findViewById(R.id.fab);
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // TODO 10. Invoke the method created to a new item to the top of the list so it's
-                //  triggered when the user taps the Floating Action Button
-                mAdapter.addItem(0, DataGenerator.getRandomInboxItem(here));
-                mBinding.recyclerView.scrollToPosition(0);
+                InboxListFragment listFragment = (InboxListFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG);
+                listFragment.addItem();
+
+                /*List<Inbox> currentData = viewModel.getInboxList();
+                currentData.add(0, newItem);
+                viewModel.setInboxList(currentData);*/
+
             }
         });
     }
